@@ -1,32 +1,25 @@
-component accessors = "true" {
+component hint="testing" accessors = "true" {
 
-  property beanFactory;
+  /**
+  * @hint "This is a test"
+  * @thing "a hint?""
+  */
+  public numeric function save( required component thing ) {
 
-  public any function init(  ) {
-    return this;
-  }
-
-  public numeric function save( any thing ) {
-
-    if ( thing.getID() ) { //existing
-      var sql = "UPDATE thingTbl
-        SET name = :name
-        WHERE thingId = :thingId";
-    } else { //new
-      var sql = "INSERT INTO thingTbl(
-        name) VALUES (
-        :name)";
-    }
+    var sql = "INSERT INTO thingTbl(
+      thingId,
+      name) VALUES (
+      :thingId,
+      :name";
 
     var params = {
-      thingId = { value = thing.getID(), cfsqltype = "CF_SQL_INTEGER" },
-      name = { value = thing.getName(), cfsqltype = "CF_SQL_VARCHAR" }
+      thingId = { "value" = thing.getID(), "cfsqltype" = "CF_SQL_INTEGER" },
+      name = { "value" = thing.getName(), "cfsqltype" = "CF_SQL_VARCHAR", null = !len( thing.getName() ) }
     };
 
-    var qry_saveThing = '';
-    QueryExecute( sql, params, { result = "qry_saveThing" } );
+    QueryExecute( sql, params );
 
-    return ( thing.getID() ? thing.getId() : qry_saveThing.generatedKey);
+    return thing.getID();
   }
 
 }
